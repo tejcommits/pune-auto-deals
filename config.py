@@ -16,9 +16,9 @@ class Config:
     ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin")
     DATABASE = os.environ.get("DATABASE", str(BASE_DIR / "autohub.db"))
 
-    BUSINESS_NAME = os.environ.get("BUSINESS_NAME", "Pune Auto Deals")
-    # Phone in international format without +, e.g. 919999999999
-    WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "919999999999")
+    BUSINESS_NAME = os.environ.get("BUSINESS_NAME", "AutoLux")
+    # Phone in international format without +, e.g. 919226441010
+    WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "919226441010")
 
     RUN_SCHEDULER = os.environ.get("RUN_SCHEDULER", "0") == "1"
     SCRAPE_INTERVAL_HOURS = int(os.environ.get("SCRAPE_INTERVAL_HOURS", "12"))

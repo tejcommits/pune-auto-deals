@@ -3,13 +3,19 @@
 {% block body %}
 <div class="admin-shell">
   <aside class="sidebar">
-    <div class="sidebar-brand">{{ business_name }}<span>dealer console</span></div>
+    <div class="sidebar-brand">
+      <img class="sidebar-logo" src="{{ url_for('static', filename='img/logo.svg') }}" alt="">
+      <div>{{ business_name }}<span>dealer console</span></div>
+    </div>
     <nav class="sidebar-nav">
       <a href="{{ url_for('admin.deals') }}" class="{{ 'active' if request.endpoint == 'admin.deals' }}">
         Deals <span class="count">{{ stats.deals }}</span>
       </a>
       <a href="{{ url_for('admin.inventory') }}" class="{{ 'active' if request.endpoint == 'admin.inventory' }}">
         My inventory <span class="count">{{ stats.published }}</span>
+      </a>
+      <a href="{{ url_for('admin.trends') }}" class="{{ 'active' if request.endpoint == 'admin.trends' }}">
+        Market trends
       </a>
       <a href="{{ url_for('admin.enquiries') }}" class="{{ 'active' if request.endpoint == 'admin.enquiries' }}">
         Enquiries {% if stats.enquiries %}<span class="count count-hot">{{ stats.enquiries }}</span>{% endif %}

@@ -167,6 +167,66 @@ def mark_handled(eid):
     return redirect(url_for("admin.enquiries"))
 
 
+@bp.route("/trends")
+@login_required
+def trends():
+    db = get_db()
+
+    # What's in demand, read from live Pune supply across every source.
+    # Listing volume per model is the best free proxy for demand; pair it with
+    # asking price and how new the stock is. (No public per-city sales feed
+    # exists, so supply + price is the honest, defensible signal.)
+    top_models = db.execute(
+        """SELECT make || ' ' || model AS name, COUNT(*) AS listings,
+                  CAST(AVG(listed_price) AS INT) AS avg_price, MIN(year) AS oldest, MAX(year) AS newest
+           FROM vehicles WHERE listed_price IS NOT NULL AND model IS NOT NULL
+           GROUP BY make, model HAVING listings >= 2
+           ORDER BY listings DESC LIMIT 12"""
+    ).fetchall()
+
+    top_makes = db.execute(
+        """SELECT make, COUNT(*) AS listings FROM vehicles WHERE make IS NOT NULL
+           GROUP BY make ORDER BY listings DESC LIMIT 8"""
+    ).fetchall()
+
+    fuel_rows = db.execute(
+        """SELECT COALESCE(NULLIF(fuel,''),'Other') AS fuel, COUNT(*) AS c
+           FROM vehicles GROUP BY fuel ORDER BY c DESC"""
+    ).fetchall()
+
+    year_rows = db.execute(
+        """SELECT year, COUNT(*) AS c FROM vehicles
+           WHERE year IS NOT NULL AND year >= 2008 GROUP BY year ORDER BY year"""
+    ).fetchall()
+
+    source_rows = db.execute(
+        "SELECT source, COUNT(*) AS c FROM vehicles GROUP BY source ORDER BY c DESC"
+    ).fetchall()
+
+    # price bands (computed in Python so the buckets read nicely)
+    bands = [("Under ₹3L", 0, 300000), ("₹3–5L", 300000, 500000), ("₹5–8L", 500000, 800000),
+             ("₹8–12L", 800000, 1200000), ("₹12L+", 1200000, 10**9)]
+    prices = [r["listed_price"] for r in db.execute(
+        "SELECT listed_price FROM vehicles WHERE listed_price IS NOT NULL").fetchall()]
+    price_bands = [{"label": lab, "c": sum(1 for p in prices if lo <= p < hi)} for lab, lo, hi in bands]
+
+    prices_sorted = sorted(prices)
+    median = prices_sorted[len(prices_sorted) // 2] if prices_sorted else 0
+
+    data = {
+        "top_models": [dict(r) for r in top_models],
+        "top_makes": [dict(r) for r in top_makes],
+        "fuel": [dict(r) for r in fuel_rows],
+        "years": [dict(r) for r in year_rows],
+        "sources": [dict(r) for r in source_rows],
+        "price_bands": price_bands,
+        "total": len(prices),
+        "median": median,
+        "distinct_models": len(top_models),
+    }
+    return render_template("admin/trends.html", d=data, stats=_stats(db))
+
+
 @bp.route("/scrapers")
 @login_required
 def scrapers():

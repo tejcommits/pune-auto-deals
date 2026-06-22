@@ -13,8 +13,8 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: BUSINESS_NAME
-        value: Pune Auto Deals
+        value: AutoLux
       - key: WHATSAPP_NUMBER
-        value: "919999999999"
+        value: "919226441010"
       - key: PYTHON_VERSION
         value: "3.11.9"

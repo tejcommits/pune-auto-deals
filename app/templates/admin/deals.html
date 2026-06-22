@@ -27,7 +27,7 @@
 <div class="table-wrap">
   <table class="data-table">
     <thead>
-      <tr><th></th><th>Vehicle</th><th>Year</th><th>KM</th><th>Fuel</th><th>Area</th><th>Source</th><th class="num">Asking</th><th></th></tr>
+      <tr><th></th><th>Vehicle</th><th>Year</th><th>KM</th><th>Fuel</th><th>Area</th><th>Source</th><th class="num">Asking</th><th></th><th></th></tr>
     </thead>
     <tbody>
       {% for v in deals %}
@@ -40,7 +40,12 @@
         <td>{{ v['location'] }}</td>
         <td><span class="src">{{ v['source'] }}</span></td>
         <td class="num"><strong>{{ v['listed_price']|inr }}</strong></td>
-        <td><a class="btn-sm" href="{{ url_for('admin.deal', vid=v['id']) }}">Review &amp; buy</a></td>
+        <td>
+          {% if v['source_url'] %}
+          <a class="btn-sm" href="{{ v['source_url'] }}" target="_blank" rel="noopener">View listing ↗</a>
+          {% else %}<span class="muted small">no link</span>{% endif %}
+        </td>
+        <td><a class="btn-sm btn-ghost" href="{{ url_for('admin.deal', vid=v['id']) }}">Buy &amp; publish</a></td>
       </tr>
       {% endfor %}
     </tbody>

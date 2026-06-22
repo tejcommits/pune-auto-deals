@@ -1,0 +1,95 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_content %}
+<div class="page-head">
+  <div>
+    <h1>Market trends · Pune</h1>
+    <p class="muted">What's moving in the Pune used-car market, read live from {{ d.total }} listings across all your sources.</p>
+  </div>
+</div>
+
+<div class="trend-stats">
+  <div class="tstat"><span class="tstat-num">{{ d.total }}</span><span class="tstat-lab">live listings tracked</span></div>
+  <div class="tstat"><span class="tstat-num">{{ d.top_makes|length }}+</span><span class="tstat-lab">brands on the market</span></div>
+  <div class="tstat"><span class="tstat-num">{{ d.median|inr }}</span><span class="tstat-lab">median asking price</span></div>
+</div>
+
+<div class="trend-grid">
+  <section class="card-panel trend-wide">
+    <h2>Most-listed models right now</h2>
+    <p class="muted small">High listing volume = high supply and, usually, high demand. Avg asking price shown on the right.</p>
+    {% set mmax = (d.top_models|map(attribute='listings')|max) or 1 %}
+    <div class="bars">
+      {% for m in d.top_models %}
+      <div class="bar-row">
+        <span class="bar-label">{{ m.name }}</span>
+        <span class="bar-track"><span class="bar-fill" style="width: {{ (m.listings / mmax * 100)|round }}%"></span></span>
+        <span class="bar-val">{{ m.listings }} <span class="muted">· {{ m.avg_price|inr }}</span></span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="card-panel">
+    <h2>Price bands</h2>
+    <p class="muted small">Where the market sits.</p>
+    {% set pmax = (d.price_bands|map(attribute='c')|max) or 1 %}
+    <div class="bars">
+      {% for b in d.price_bands %}
+      <div class="bar-row">
+        <span class="bar-label">{{ b.label }}</span>
+        <span class="bar-track"><span class="bar-fill" style="width: {{ (b.c / pmax * 100)|round }}%"></span></span>
+        <span class="bar-val">{{ b.c }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="card-panel">
+    <h2>Fuel mix</h2>
+    <p class="muted small">Share of listings by fuel type.</p>
+    {% set fmax = (d.fuel|map(attribute='c')|max) or 1 %}
+    <div class="bars">
+      {% for f in d.fuel %}
+      <div class="bar-row">
+        <span class="bar-label">{{ f.fuel }}</span>
+        <span class="bar-track"><span class="bar-fill" style="width: {{ (f.c / fmax * 100)|round }}%"></span></span>
+        <span class="bar-val">{{ f.c }} <span class="muted">· {{ (f.c / d.total * 100)|round }}%</span></span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="card-panel trend-wide">
+    <h2>Stock by year</h2>
+    <p class="muted small">How old the cars on the market are.</p>
+    {% set ymax = (d.years|map(attribute='c')|max) or 1 %}
+    <div class="columns">
+      {% for y in d.years %}
+      <div class="col-item" title="{{ y.year }}: {{ y.c }} listings">
+        <span class="col-bar" style="height: {{ (y.c / ymax * 100)|round }}%"></span>
+        <span class="col-lab">'{{ '%02d' % (y.year % 100) }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="card-panel">
+    <h2>By source</h2>
+    <p class="muted small">Where the listings come from.</p>
+    {% set smax = (d.sources|map(attribute='c')|max) or 1 %}
+    <div class="bars">
+      {% for s in d.sources %}
+      <div class="bar-row">
+        <span class="bar-label">{{ s.source }}</span>
+        <span class="bar-track"><span class="bar-fill" style="width: {{ (s.c / smax * 100)|round }}%"></span></span>
+        <span class="bar-val">{{ s.c }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+<p class="muted small trend-note">
+  How this is measured: there's no free public feed of actual used-car <em>sales</em> per city, so demand is read from live <strong>listing supply</strong> — how many of each model are on the market, at what price, and how new — refreshed from every connected source. Models with the most listings are the ones dealers stock and buyers search hardest for.
+</p>
+{% endblock %}

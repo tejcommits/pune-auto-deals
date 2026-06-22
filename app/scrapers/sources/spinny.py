@@ -73,10 +73,14 @@ class SpinnyScraper(BaseScraper):
         owners = r.get("no_of_owners")
         owner_label = {1: "1st", 2: "2nd", 3: "3rd"}.get(owners, f"{owners}th" if owners else None)
 
+        url = r.get("permanent_url") or ""
+        if url.startswith("/"):
+            url = "https://www.spinny.com" + url
+
         return {
             "source": "spinny",
             "external_id": str(r.get("id")),
-            "source_url": r.get("permanent_url"),
+            "source_url": url or None,
             "title": " ".join(str(x) for x in
                                [r.get("make_year"), r.get("make"), r.get("model"), r.get("variant")] if x),
             "make": r.get("make"),

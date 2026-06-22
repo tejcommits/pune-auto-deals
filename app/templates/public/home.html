@@ -3,7 +3,10 @@
 {% block body %}
 <header class="site-header">
   <div class="container site-header-inner">
-    <a class="brand" href="{{ url_for('public.home') }}">{{ business_name }}</a>
+    <a class="brand" href="{{ url_for('public.home') }}">
+      <img class="brand-logo" src="{{ url_for('static', filename='img/logo.svg') }}" alt="">
+      <span class="brand-word">{{ business_name }}</span>
+    </a>
     <nav class="site-nav">
       <a href="#cars">Cars in stock</a>
       <a class="wa-link" href="https://wa.me/{{ whatsapp_number }}" target="_blank" rel="noopener">WhatsApp us</a>
@@ -13,9 +16,9 @@
 
 <section class="hero">
   <div class="container">
-    <p class="hero-kicker">Hand-picked used cars &amp; bikes in Pune</p>
+    <p class="hero-kicker">Certified &amp; handpicked pre-owned cars · Pune</p>
     <h1 class="hero-title">Honest deals. We tell you exactly what's been done<br>and what still needs doing.</h1>
-    <p class="hero-sub">Every vehicle is inspected before it goes up. Take it as-is and save, or let us fix what's listed and hand it over ready to drive.</p>
+    <p class="hero-sub">Every car is inspected before it goes up. Take it as-is and save, or let us fix what's listed and hand it over ready to drive.</p>
   </div>
 </section>
 
