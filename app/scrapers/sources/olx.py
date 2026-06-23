@@ -1,5 +1,15 @@
-from ..base import BaseScraper
-from ._helpers import to_int, year_from
+"""OLX India via Apify.
+
+Verified working: the actor returns real Pune car listings with full specs and
+photos (Pune location id g4059014). Run through Apify because OLX blocks direct
+scraping. Needs APIFY_TOKEN; skipped and flagged in health without it.
+"""
+from ..base import BaseScraper, record_health, match_filters
+from ._helpers import to_int
+from ..apify_client import run_actor, has_token
+
+ACTOR = "natanielsantos~olx-india-scraper"
+PUNE_CARS_URL = "https://www.olx.in/pune_g4059014/cars_c84"
 
 
 class OlxScraper(BaseScraper):
@@ -8,30 +18,63 @@ class OlxScraper(BaseScraper):
     expected_min = 5
 
     def list_urls(self):
-        return ["https://www.olx.in/pune_g4058659/cars_c84"]
+        return []
 
     def parse(self, html, url):
-        soup = self.soup(html)
-        rows = []
-        for card in soup.select("li[data-aut-id='itemBox']"):
-            try:
-                link = card.select_one("a")
-                href = link.get("href") if link else None
-                title = card.select_one("[data-aut-id='itemTitle']")
-                price = card.select_one("[data-aut-id='itemPrice']")
-                detail = card.select_one("[data-aut-id='itemDetails']")
-                img = card.select_one("img")
-                rows.append({
-                    "external_id": href.rstrip("/").split("-")[-1] if href else None,
-                    "source_url": ("https://www.olx.in" + href) if href and href.startswith("/") else href,
-                    "title": title.get_text(strip=True) if title else None,
-                    "listed_price": to_int(price.get_text() if price else None),
-                    "year": year_from((title.get_text() if title else "")),
-                    "km": to_int(detail.get_text() if detail else None),
-                    "location": "Pune",
-                    "seller_type": "individual",
-                    "image_url": img.get("src") if img else None,
-                })
-            except Exception:
+        return []
+
+    def run(self, db, filters=None):
+        if not has_token():
+            record_health(db, self.name, False, 0, self.expected_min,
+                           "needs APIFY_TOKEN (add it to enable OLX)")
+            db.commit()
+            return 0, False, "no APIFY_TOKEN"
+
+        cap = (filters or {}).get("max_per_source") or 40
+        error, rows = None, []
+        try:
+            items = run_actor(ACTOR, {
+                "startUrls": [{"url": PUNE_CARS_URL}], "maxItemsPerUrl": cap,
+            })
+            rows = [r for r in (self._to_row(it) for it in items) if r]
+        except Exception as exc:
+            error = f"{type(exc).__name__}: {exc}"
+
+        saved = 0
+        for row in rows:
+            if not row.get("external_id") or not match_filters(row, filters):
                 continue
-        return rows
+            from ..db import upsert_vehicle
+            upsert_vehicle(db, row)
+            saved += 1
+
+        ok = error is None and len(rows) >= self.expected_min
+        record_health(db, self.name, ok, len(rows), self.expected_min,
+                       error or ("ok" if ok else "returned fewer rows than expected"))
+        db.commit()
+        return saved, ok, error
+
+    def _to_row(self, it):
+        by = {}
+        for p in (it.get("parameters") or []):
+            if p.get("key_name"):
+                by[p["key_name"]] = p.get("value_name") or p.get("formatted_value")
+        loc = it.get("locationsResolved") or {}
+        return {
+            "source": "olx",
+            "external_id": str(it.get("id")),
+            "source_url": it.get("url"),
+            "title": it.get("title"),
+            "make": by.get("Brand"),
+            "model": by.get("Model"),
+            "variant": by.get("Variant"),
+            "year": to_int(by.get("Year")),
+            "km": to_int(by.get("KM driven")),
+            "fuel": by.get("Fuel"),
+            "transmission": by.get("Transmission"),
+            "owners": by.get("No. of Owners"),
+            "location": loc.get("SUBLOCALITY_LEVEL_1_name") or loc.get("ADMIN_LEVEL_3_name") or "Pune",
+            "seller_type": "individual" if it.get("userType") == "Regular" else "dealer",
+            "listed_price": (it.get("price") or {}).get("raw"),
+            "image_url": it.get("mainImage"),
+        }

@@ -5,7 +5,21 @@
     <h1>Scrapers</h1>
     <p class="muted">Each Pune source and whether it's working. A broken one means its site changed or blocked us.</p>
   </div>
-  <button type="button" class="btn-primary" onclick="document.getElementById('scrapeModal').classList.add('open')">Scrape now</button>
+  <div class="scrape-controls">
+    {% if apify.connected and apify.credits %}
+      {% set c = apify.credits %}
+      <div class="credit-chip" title="Apify usage this month">
+        <span class="credit-label">Apify credits left</span>
+        <span class="credit-amt">${{ '%.2f'|format(c.remaining) }}<span class="credit-of"> / ${{ '%.0f'|format(c.limit) }}</span></span>
+        <span class="credit-bar"><span class="credit-fill" style="width: {{ ((c.remaining / c.limit) * 100)|round }}%"></span></span>
+      </div>
+    {% elif apify.connected %}
+      <div class="credit-chip credit-warn"><span class="credit-label">Apify connected</span><span class="credit-amt">usage unavailable</span></div>
+    {% else %}
+      <div class="credit-chip credit-off"><span class="credit-label">Apify not connected</span><span class="credit-amt">OLX · Facebook · Cars24 need a token</span></div>
+    {% endif %}
+    <button type="button" class="btn-primary" onclick="document.getElementById('scrapeModal').classList.add('open')">Scrape now</button>
+  </div>
 </div>
 
 <div class="modal-backdrop" id="scrapeModal">

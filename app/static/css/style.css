@@ -258,6 +258,17 @@ code { background: #eef1f5; padding: 1px 6px; border-radius: 5px; font-size: 13p
 .col-lab { font-size: 11px; color: var(--muted); margin-top: 5px; }
 .trend-note { margin-top: 20px; padding: 14px 16px; background: #fff; border-radius: 12px; box-shadow: var(--shadow); line-height: 1.6; }
 
+/* ---------- apify credit chip ---------- */
+.scrape-controls { display: flex; align-items: center; gap: 14px; }
+.credit-chip { display: grid; gap: 3px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 8px 14px; min-width: 180px; }
+.credit-label { font-size: 11px; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); }
+.credit-amt { font-size: 16px; font-weight: 800; color: var(--navy); }
+.credit-of { font-size: 12px; font-weight: 500; color: var(--muted); }
+.credit-bar { height: 5px; background: #eef1f5; border-radius: 4px; overflow: hidden; margin-top: 2px; }
+.credit-fill { display: block; height: 100%; background: var(--brand-grad); }
+.credit-off .credit-amt, .credit-warn .credit-amt { font-size: 12px; font-weight: 600; color: var(--muted); }
+.credit-off { border-style: dashed; }
+
 /* ---------- modal ---------- */
 .modal-backdrop { position: fixed; inset: 0; background: rgba(11,27,51,.55); display: none; align-items: flex-start; justify-content: center; z-index: 60; padding: 28px 16px; overflow-y: auto; }
 .modal-backdrop.open { display: flex; }

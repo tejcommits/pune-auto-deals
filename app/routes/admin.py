@@ -244,8 +244,11 @@ def scrapers():
         if r["model"] not in models_by_make[r["make"]]:
             models_by_make[r["make"]].append(r["model"])
 
+    from ..scrapers.apify_client import credits, has_token
+    apify = {"connected": has_token(), "credits": credits()}
+
     return render_template("admin/scrapers.html", health=health, stats=_stats(db),
-                           makes=makes, models_by_make=models_by_make)
+                           makes=makes, models_by_make=models_by_make, apify=apify)
 
 
 @bp.route("/scrapers/run", methods=["POST"])
