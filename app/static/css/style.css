@@ -259,9 +259,9 @@ code { background: #eef1f5; padding: 1px 6px; border-radius: 5px; font-size: 13p
 .trend-note { margin-top: 20px; padding: 14px 16px; background: #fff; border-radius: 12px; box-shadow: var(--shadow); line-height: 1.6; }
 
 /* ---------- modal ---------- */
-.modal-backdrop { position: fixed; inset: 0; background: rgba(11,27,51,.55); display: none; align-items: flex-start; justify-content: center; z-index: 60; padding: 60px 16px; }
+.modal-backdrop { position: fixed; inset: 0; background: rgba(11,27,51,.55); display: none; align-items: flex-start; justify-content: center; z-index: 60; padding: 28px 16px; overflow-y: auto; }
 .modal-backdrop.open { display: flex; }
-.modal { background: #fff; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.3); width: 100%; max-width: 460px; padding: 22px 24px 24px; }
+.modal { background: #fff; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.3); width: 100%; max-width: 460px; padding: 22px 24px 24px; max-height: calc(100vh - 56px); overflow-y: auto; }
 .modal-head { display: flex; align-items: center; justify-content: space-between; }
 .modal-head h2 { font-size: 19px; }
 .modal-x { background: none; border: 0; font-size: 26px; line-height: 1; color: var(--muted); cursor: pointer; }
