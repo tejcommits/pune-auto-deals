@@ -59,11 +59,21 @@ def create_app(config_class=Config):
             return value
 
     # Make a few values available to every template.
+    # Cache-bust static assets: stamp links with the CSS file's mtime, so a
+    # changed stylesheet is always re-fetched instead of served stale.
+    import os
+    _css = os.path.join(app.static_folder, "css", "style.css")
+    try:
+        asset_v = str(int(os.path.getmtime(_css)))
+    except OSError:
+        asset_v = "1"
+
     @app.context_processor
     def inject_globals():
         return {
             "business_name": app.config["BUSINESS_NAME"],
             "whatsapp_number": app.config["WHATSAPP_NUMBER"],
+            "asset_v": asset_v,
         }
 
     # Optional in-process scheduler. On a real server prefer cron.
