@@ -146,15 +146,15 @@
     <tbody>
       {% for h in health %}
       <tr>
-        <td><strong>{{ h['source'] }}</strong></td>
-        <td>
+        <td data-label="Source"><strong>{{ h['source'] }}</strong></td>
+        <td data-label="Status">
           {% if h['status'] == 'ok' %}<span class="badge badge-live">working</span>
           {% else %}<span class="badge badge-bad">broken</span>{% endif %}
         </td>
-        <td class="num">{{ h['items_found'] }}</td>
-        <td class="num">{{ h['expected_min'] }}</td>
-        <td class="muted small">{{ (h['last_run'] or '-')[:16].replace('T',' ') }}</td>
-        <td class="muted small">{{ h['message'] }}</td>
+        <td class="num" data-label="Found">{{ h['items_found'] }}</td>
+        <td class="num" data-label="Expected">{{ h['expected_min'] }}</td>
+        <td class="muted small" data-label="Last run">{{ (h['last_run'] or '-')[:16].replace('T',' ') }}</td>
+        <td class="muted small" data-label="Note">{{ h['message'] }}</td>
       </tr>
       {% endfor %}
     </tbody>

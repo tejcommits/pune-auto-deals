@@ -15,17 +15,17 @@
     <tbody>
       {% for e in enquiries %}
       <tr class="{{ 'done' if e['handled'] }}">
-        <td class="muted small">{{ e['created_at'][:16].replace('T',' ') }}</td>
-        <td><strong>{{ e['name'] }}</strong></td>
-        <td><a href="tel:{{ e['phone'] }}">{{ e['phone'] }}</a></td>
-        <td>{{ e['title'] }}</td>
-        <td>
+        <td class="muted small" data-label="When">{{ e['created_at'][:16].replace('T',' ') }}</td>
+        <td data-label="Name"><strong>{{ e['name'] }}</strong></td>
+        <td data-label="Phone"><a href="tel:{{ e['phone'] }}">{{ e['phone'] }}</a></td>
+        <td data-label="Vehicle">{{ e['title'] }}</td>
+        <td data-label="Wants">
           {% if e['option_chosen'] == 'as_is' %}<span class="badge">As-is</span>
           {% elif e['option_chosen'] == 'fixed' %}<span class="badge badge-live">Fixed</span>
           {% else %}<span class="badge badge-muted">Unsure</span>{% endif %}
         </td>
-        <td class="muted small">{{ e['message'] or '-' }}</td>
-        <td>
+        <td class="muted small" data-label="Message">{{ e['message'] or '-' }}</td>
+        <td class="cell-action">
           {% if not e['handled'] %}
           <form method="post" action="{{ url_for('admin.mark_handled', eid=e['id']) }}" class="inline">
             <button class="btn-sm btn-ghost">Mark done</button>

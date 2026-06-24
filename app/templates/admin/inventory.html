@@ -17,19 +17,19 @@
       {% for v in vehicles %}
       <tr>
         <td class="thumb-cell">{{ vehicle_photo(v, "photo-thumb", src=(url_for('static', filename='uploads/' + covers[v['id']]) if covers.get(v['id']) else none)) }}</td>
-        <td><strong>{{ v['year'] }} {{ v['make'] }} {{ v['model'] }}</strong><br><span class="muted small">{{ v['variant'] }} · {{ v['location'] }}</span></td>
-        <td>{{ v['buy_price']|inr }}</td>
-        <td class="num">{{ v['as_is_price']|inr }}</td>
-        <td class="num">{{ v['fixed_price']|inr }}</td>
-        <td class="num">
+        <td data-label="Vehicle"><strong>{{ v['year'] }} {{ v['make'] }} {{ v['model'] }}</strong><br><span class="muted small">{{ v['variant'] }} · {{ v['location'] }}</span></td>
+        <td data-label="Bought">{{ v['buy_price']|inr }}</td>
+        <td class="num" data-label="As-is">{{ v['as_is_price']|inr }}</td>
+        <td class="num" data-label="Fixed">{{ v['fixed_price']|inr }}</td>
+        <td class="num" data-label="Margin">
           {% if v['buy_price'] and v['as_is_price'] %}
             <span class="margin">+{{ (v['as_is_price'] - v['buy_price'])|inr }}</span>
           {% else %}-{% endif %}
         </td>
-        <td>
+        <td data-label="Status">
           <span class="badge badge-{{ 'live' if v['status']=='published' else 'sold' }}">{{ v['status'] }}</span>
         </td>
-        <td class="actions">
+        <td class="actions cell-action">
           <a class="btn-sm btn-ghost" href="{{ url_for('admin.photos', vid=v['id']) }}">
             Photos{% if counts.get(v['id']) %} ({{ counts[v['id']] }}){% else %} <span class="needs-photos">!</span>{% endif %}
           </a>

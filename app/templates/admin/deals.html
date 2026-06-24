@@ -73,19 +73,19 @@
       {% for v in deals %}
       <tr>
         <td class="thumb-cell">{{ vehicle_photo(v, "photo-thumb") }}</td>
-        <td><strong>{{ v['make'] }} {{ v['model'] }}</strong><br><span class="muted small">{{ v['variant'] }}</span></td>
-        <td>{{ v['year'] }}</td>
-        <td>{{ v['km']|km }}</td>
-        <td>{{ v['fuel'] }}</td>
-        <td>{{ v['location'] }}</td>
-        <td><span class="src">{{ v['source'] }}</span></td>
-        <td class="num"><strong>{{ v['listed_price']|inr }}</strong></td>
-        <td>
+        <td data-label="Vehicle"><strong>{{ v['make'] }} {{ v['model'] }}</strong>{% if v['variant'] %}<br><span class="muted small">{{ v['variant'] }}</span>{% endif %}</td>
+        <td data-label="Year">{{ v['year'] }}</td>
+        <td data-label="KM">{{ v['km']|km }}</td>
+        <td data-label="Fuel">{{ v['fuel'] }}</td>
+        <td data-label="Area">{{ v['location'] }}</td>
+        <td data-label="Source"><span class="src">{{ v['source'] }}</span></td>
+        <td class="num" data-label="Asking"><strong>{{ v['listed_price']|inr }}</strong></td>
+        <td class="cell-action">
           {% if v['source_url'] %}
           <a class="btn-sm" href="{{ v['source_url'] }}" target="_blank" rel="noopener">View listing ↗</a>
           {% else %}<span class="muted small">no link</span>{% endif %}
         </td>
-        <td><a class="btn-sm btn-ghost" href="{{ url_for('admin.deal', vid=v['id']) }}">Buy &amp; publish</a></td>
+        <td class="cell-action"><a class="btn-sm btn-ghost" href="{{ url_for('admin.deal', vid=v['id']) }}">Buy &amp; publish</a></td>
       </tr>
       {% endfor %}
     </tbody>
