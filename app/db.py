@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
 
     featured      INTEGER DEFAULT 0,
     fresh         INTEGER DEFAULT 0,     -- newly added in the most recent scrape
+    color         TEXT,
     scraped_at    TEXT,
     published_at  TEXT,
     UNIQUE(source, external_id)
@@ -116,8 +117,25 @@ def init_db():
     cols = [r[1] for r in db.execute("PRAGMA table_info(vehicles)").fetchall()]
     if "fresh" not in cols:
         db.execute("ALTER TABLE vehicles ADD COLUMN fresh INTEGER DEFAULT 0")
+    if "color" not in cols:
+        db.execute("ALTER TABLE vehicles ADD COLUMN color TEXT")
     db.commit()
     db.close()
+
+
+_COLORS = ["white", "black", "silver", "grey", "gray", "red", "blue", "brown",
+           "maroon", "green", "gold", "golden", "orange", "yellow", "beige", "bronze", "purple"]
+
+
+def extract_color(text):
+    """Pull a colour word out of a title/description, if present."""
+    if not text:
+        return None
+    t = str(text).lower()
+    for c in _COLORS:
+        if c in t:
+            return "Grey" if c in ("grey", "gray") else c.capitalize()
+    return None
 
 
 def now():
@@ -178,9 +196,11 @@ def upsert_vehicle(db, row):
     ]
     values = [row.get(c) for c in cols]
     values[cols.index("scraped_at")] = now()
-    # newly inserted listings are flagged 'fresh' so the deals page can tag them NEW
-    cols = cols + ["fresh"]
-    values = values + [1]
+    # newly inserted listings are flagged 'fresh' so the deals page can tag them NEW;
+    # capture colour (from the source if given, else from the title) for search
+    color = row.get("color") or extract_color(row.get("title"))
+    cols = cols + ["fresh", "color"]
+    values = values + [1, color]
     placeholders = ",".join("?" * len(cols))
     cur = db.execute(
         f"INSERT INTO vehicles ({','.join(cols)}) VALUES ({placeholders})", values

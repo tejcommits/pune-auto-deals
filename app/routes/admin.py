@@ -53,10 +53,16 @@ def deals():
     db = get_db()
     a = request.args
     f = {k: a.get(k, "").strip() for k in
-         ("make", "source", "fuel", "area", "sort", "min_year", "max_km", "max_price")}
+         ("q", "make", "source", "fuel", "area", "sort", "min_year", "max_km", "max_price")}
 
     sql = "SELECT * FROM vehicles WHERE status='scraped'"
     params = []
+    if f["q"]:
+        # every word in the search must appear somewhere (make/model/variant/colour/area/title)
+        for word in f["q"].split():
+            sql += (" AND (title LIKE ? OR make LIKE ? OR model LIKE ? OR variant LIKE ? "
+                    "OR color LIKE ? OR location LIKE ?)")
+            params += [f"%{word}%"] * 6
     if f["make"]:
         sql += " AND make=?"; params.append(f["make"])
     if f["source"]:

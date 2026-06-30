@@ -102,4 +102,5 @@ class SpinnyScraper(BaseScraper):
             "seller_type": "dealer",
             "listed_price": int(r["price"]) if r.get("price") else None,
             "image_url": img,
+            "color": (r.get("color") or "").strip().capitalize() or None,
         }

@@ -10,6 +10,10 @@
 
 <form class="filters-bar" method="get" id="dealFilters">
   <div class="filter-line">
+    <input type="search" name="q" value="{{ filters.q }}" class="deal-search"
+           placeholder="Search e.g. white city, swift diesel, koregaon park…">
+  </div>
+  <div class="filter-line">
     <select name="make" onchange="this.form.submit()">
       <option value="">All makes</option>
       {% for m in makes %}<option value="{{ m }}" {{ 'selected' if filters.make == m }}>{{ m }}</option>{% endfor %}
