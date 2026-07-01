@@ -71,18 +71,21 @@ class BaseScraper:
         # regardless of the dealer's save filter — stamp that before filtering.
         stamp_seen(db, self.name, (r.get("external_id") for r in rows))
 
+        # check_only (the Clean up button) cross-checks what's still live but
+        # never adds new listings to the deals.
         cap = (filters or {}).get("max_per_source")
         saved = 0
-        for row in rows:
-            row.setdefault("source", self.name)
-            if not row.get("external_id"):
-                continue
-            if not match_filters(row, filters):
-                continue
-            upsert_vehicle(db, row)
-            saved += 1
-            if cap and saved >= cap:
-                break
+        if not (filters or {}).get("check_only"):
+            for row in rows:
+                row.setdefault("source", self.name)
+                if not row.get("external_id"):
+                    continue
+                if not match_filters(row, filters):
+                    continue
+                upsert_vehicle(db, row)
+                saved += 1
+                if cap and saved >= cap:
+                    break
 
         # Health reflects whether the SOURCE is reachable/parsing — judged on the
         # raw rows returned, not on how many passed the dealer's filter.

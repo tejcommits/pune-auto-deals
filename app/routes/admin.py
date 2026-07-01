@@ -299,19 +299,20 @@ def scrapers():
 @bp.route("/deals/cleanup", methods=["POST"])
 @login_required
 def cleanup_deals():
-    """Re-check every source and clear out deals that vanished from it.
+    """Cross-check the deals against their sources and clear out the gone ones.
 
-    A listing that's sold or delisted stops showing up in a fresh scrape, so
-    anything not seen this pass gets hidden from Deals; anything hidden for
-    a week or more is removed for good. Runs synchronously — it's a manual,
-    occasional admin action, not the public site.
+    This ONLY cleans up — it never adds new listings. Each source is re-checked
+    (check_only), a deal still present on its source is marked seen, one that's
+    sold or delisted is hidden from Deals, and anything hidden for a week or more
+    is removed for good. Runs synchronously — a manual, occasional admin action.
     """
     from ..scrapers.sources import ALL_SOURCES
     from ..db import sweep_delisted
 
     db = get_db()
     start_ts = now()
-    filters = {"max_per_source": 60}  # match the default full-scrape cap, keeps Apify cost predictable
+    # check_only: fetch to see what's still live, but don't upsert any new cars.
+    filters = {"check_only": True, "max_per_source": 60}
     for cls in ALL_SOURCES:
         try:
             cls().run(db, filters)

@@ -73,14 +73,15 @@ class CarTradeScraper(BaseScraper):
 
         cap = (filters or {}).get("max_per_source") or 40
         saved = 0
-        for row in rows:
-            if not row.get("external_id") or not match_filters(row, filters):
-                continue
-            from ...db import upsert_vehicle
-            upsert_vehicle(db, row)
-            saved += 1
-            if saved >= cap:
-                break
+        if not (filters or {}).get("check_only"):
+            for row in rows:
+                if not row.get("external_id") or not match_filters(row, filters):
+                    continue
+                from ...db import upsert_vehicle
+                upsert_vehicle(db, row)
+                saved += 1
+                if saved >= cap:
+                    break
 
         ok = error is None and len(rows) >= self.expected_min
         record_health(db, self.name, ok, len(rows), self.expected_min,

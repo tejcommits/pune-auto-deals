@@ -76,7 +76,7 @@
 <div class="table-wrap">
   <table class="data-table">
     <thead>
-      <tr><th></th><th>Vehicle</th><th>Year</th><th>KM</th><th>Fuel</th><th>Area</th><th>Source</th><th>Added</th><th class="num">Asking</th><th></th><th></th></tr>
+      <tr><th></th><th>Vehicle</th><th>Year</th><th>KM</th><th>Fuel</th><th>Owner</th><th>Area</th><th>Source</th><th>Added</th><th class="num">Asking</th><th></th><th></th></tr>
     </thead>
     <tbody>
       {% for v in deals %}
@@ -89,6 +89,7 @@
         <td data-label="Year">{{ v['year'] }}</td>
         <td data-label="KM">{{ v['km']|km }}</td>
         <td data-label="Fuel">{{ v['fuel'] }}</td>
+        <td data-label="Owner">{% if v['owners'] %}{{ v['owners'] }}{% if 'owner' not in v['owners']|lower %} owner{% endif %}{% else %}<span class="muted small">—</span>{% endif %}</td>
         <td data-label="Area">{{ v['location'] }}</td>
         <td data-label="Source"><span class="src">{{ v['source'] }}</span></td>
         <td data-label="Added" class="muted small">{{ v['scraped_at']|ago }}</td>

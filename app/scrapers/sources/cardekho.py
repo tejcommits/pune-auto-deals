@@ -8,7 +8,7 @@ flags it — which is the whole point of the monitor.
 import re
 
 from ..base import BaseScraper
-from ._helpers import to_int, year_from, split_name
+from ._helpers import to_int, year_from, split_name, spec_from_dots
 
 BASE = "https://www.cardekho.com/used-cars+in+pune"
 
@@ -42,6 +42,8 @@ class CarDekhoScraper(BaseScraper):
                         src = img.get("data-src") or ""
 
                 pr = c.select_one(".Price")
+                dots = c.select_one(".dotsDetails")
+                km, transmission, fuel = spec_from_dots(dots.get_text(" ", strip=True) if dots else "")
                 make, model, variant = split_name(title)
                 rows.append({
                     "source": "cardekho",
@@ -50,6 +52,7 @@ class CarDekhoScraper(BaseScraper):
                     "title": title,
                     "make": make, "model": model, "variant": variant,
                     "year": year_from(title),
+                    "km": km, "fuel": fuel, "transmission": transmission,
                     "location": "Pune",
                     "seller_type": "dealer",
                     "listed_price": to_int(pr.get_text() if pr else None),

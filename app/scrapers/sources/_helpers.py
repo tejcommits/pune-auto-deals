@@ -29,6 +29,38 @@ def to_int(text):
     return int(digits) if digits else None
 
 
+def owner_label(n):
+    """Turn an owner count into a label: 1 -> '1st', 2 -> '2nd', 4 -> '4th'."""
+    try:
+        n = int(n)
+    except (TypeError, ValueError):
+        return None
+    if n <= 0:
+        return None
+    return {1: "1st", 2: "2nd", 3: "3rd"}.get(n, f"{n}th")
+
+
+_FUELS = {"petrol", "diesel", "cng", "electric", "hybrid", "lpg"}
+
+
+def spec_from_dots(text):
+    """Parse a '29,875 kms • Automatic • Petrol' spec line into
+    (km, transmission, fuel), matching each piece by pattern not position."""
+    km = trans = fuel = None
+    for part in re.split(r"[•·|]", str(text or "")):
+        p = part.strip()
+        low = p.lower()
+        if not p:
+            continue
+        if "km" in low:
+            km = to_int(p)
+        elif "automatic" in low or "amt" in low or "manual" in low:
+            trans = "Manual" if "manual" in low else "Automatic"
+        elif low in _FUELS:
+            fuel = p.title()
+    return km, trans, fuel
+
+
 def year_from(text):
     if not text:
         return None

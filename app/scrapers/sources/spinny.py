@@ -52,15 +52,16 @@ class SpinnyScraper(BaseScraper):
 
         cap = (filters or {}).get("max_per_source")
         saved = 0
-        for row in rows:
-            if not row.get("external_id"):
-                continue
-            if not match_filters(row, filters):
-                continue
-            upsert_vehicle(db, row)
-            saved += 1
-            if cap and saved >= cap:
-                break
+        if not (filters or {}).get("check_only"):
+            for row in rows:
+                if not row.get("external_id"):
+                    continue
+                if not match_filters(row, filters):
+                    continue
+                upsert_vehicle(db, row)
+                saved += 1
+                if cap and saved >= cap:
+                    break
 
         fetched = len(rows)
         ok = error is None and fetched >= self.expected_min

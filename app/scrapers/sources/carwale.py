@@ -9,7 +9,7 @@ import json
 import re
 
 from ..base import BaseScraper
-from ._helpers import to_int
+from ._helpers import to_int, owner_label
 
 BASE = "https://www.carwale.com/used/cars-in-pune/"
 
@@ -50,6 +50,7 @@ class CarWaleScraper(BaseScraper):
                     "km": s.get("kmNumeric") or to_int(s.get("km")),
                     "fuel": s.get("fuel"),
                     "transmission": s.get("transmission"),
+                    "owners": owner_label(s.get("ownersId")),
                     "location": s.get("areaName") or s.get("cityName") or "Pune",
                     "seller_type": "dealer",
                     "listed_price": s.get("priceNumeric") or to_int(s.get("price")),

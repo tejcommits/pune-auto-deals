@@ -206,10 +206,26 @@ def upsert_vehicle(db, row):
     ).fetchone()
 
     if existing:
-        db.execute(
-            "UPDATE vehicles SET listed_price=?, image_url=?, title=? WHERE id=?",
-            (row.get("listed_price"), row.get("image_url"), row.get("title"), existing["id"]),
-        )
+        if existing["status"] == "scraped":
+            # Still in the dealer's hunting list — refresh every scraped field so
+            # a corrected/updated source listing overwrites a stale first read.
+            color = row.get("color") or extract_color(row.get("title"))
+            db.execute(
+                """UPDATE vehicles SET title=?, make=?, model=?, variant=?, year=?, km=?,
+                     fuel=?, transmission=?, owners=?, location=?, seller_type=?,
+                     listed_price=?, image_url=?, color=? WHERE id=?""",
+                (row.get("title"), row.get("make"), row.get("model"), row.get("variant"),
+                 row.get("year"), row.get("km"), row.get("fuel"), row.get("transmission"),
+                 row.get("owners"), row.get("location"), row.get("seller_type"),
+                 row.get("listed_price"), row.get("image_url"), color, existing["id"]),
+            )
+        else:
+            # Already published/sold — the dealer owns those fields now. Only the
+            # source's asking price and photo get refreshed, never his edits.
+            db.execute(
+                "UPDATE vehicles SET listed_price=?, image_url=? WHERE id=?",
+                (row.get("listed_price"), row.get("image_url"), existing["id"]),
+            )
         return existing["id"]
 
     cols = [
