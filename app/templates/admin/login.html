@@ -3,11 +3,10 @@
 {% block body %}
 <div class="login-box">
   <img class="login-logo" src="{{ url_for('static', filename='img/logo.svg') }}" alt="{{ business_name }}">
-  <p class="muted">Dealer console</p>
+  <p class="muted">Owner Console</p>
   <form method="post">
     <input type="password" name="password" placeholder="Password" autofocus required>
     <button type="submit" class="btn-primary">Log in</button>
   </form>
-  <p class="muted small">Default password is <code>admin</code> until you change it in <code>.env</code>.</p>
 </div>
 {% endblock %}

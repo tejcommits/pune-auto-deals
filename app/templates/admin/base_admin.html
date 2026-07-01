@@ -20,6 +20,9 @@
       <a href="{{ url_for('admin.enquiries') }}" class="{{ 'active' if request.endpoint == 'admin.enquiries' }}">
         Enquiries {% if stats.enquiries %}<span class="count count-hot">{{ stats.enquiries }}</span>{% endif %}
       </a>
+      <a href="{{ url_for('admin.leads') }}" class="{{ 'active' if request.endpoint == 'admin.leads' }}">
+        Find-a-car leads {% if stats.leads %}<span class="count count-hot">{{ stats.leads }}</span>{% endif %}
+      </a>
       <a href="{{ url_for('admin.scrapers') }}" class="{{ 'active' if request.endpoint == 'admin.scrapers' }}">
         Scrapers {% if stats.broken %}<span class="count count-bad">{{ stats.broken }}</span>{% endif %}
       </a>

@@ -1,0 +1,50 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_content %}
+<div class="page-head">
+  <div>
+    <h1>Find-a-car leads</h1>
+    <p class="muted">Customers who told us what to source. {{ stats.leads }} still to follow up.</p>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr><th>When</th><th>Name</th><th>Phone</th><th>Looking for</th><th>Budget</th><th>By</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for l in leads %}
+      <tr class="{{ 'done' if l['handled'] }}">
+        <td class="muted small" data-label="When">{{ l['created_at'][:16].replace('T',' ') }}</td>
+        <td data-label="Name"><strong>{{ l['name'] }}</strong>{% if l['city'] %}<br><span class="muted small">{{ l['city'] }}</span>{% endif %}</td>
+        <td data-label="Phone"><a href="tel:{{ l['phone'] }}">{{ l['phone'] }}</a></td>
+        <td data-label="Looking for">
+          <div class="pills">
+            <span class="pill">{{ l['make'] or 'Open to suggestions' }}{% if l['model'] %} {{ l['model'] }}{% endif %}</span>
+            {% if l['fuel'] %}<span class="pill">{{ l['fuel'] }}</span>{% endif %}
+            {% if l['transmission'] %}<span class="pill">{{ l['transmission'] }}</span>{% endif %}
+            {% if l['year_min'] %}<span class="pill">{{ l['year_min'] }}+</span>{% endif %}
+          </div>
+          {% if l['notes'] %}<div class="muted small" style="margin-top:6px">{{ l['notes'] }}</div>{% endif %}
+        </td>
+        <td class="num" data-label="Budget"><strong>{{ l['budget']|inr }}</strong></td>
+        <td data-label="By">
+          {% if l['timeline'] == 'week' %}<span class="badge badge-live">This week</span>
+          {% elif l['timeline'] == 'exploring' %}<span class="badge badge-muted">Just looking</span>
+          {% else %}<span class="badge">This month</span>{% endif %}
+        </td>
+        <td class="cell-action">
+          <a class="btn-sm btn-ghost" href="https://wa.me/{{ l['phone']|replace('+','')|replace(' ','') }}" target="_blank" rel="noopener">WhatsApp</a>
+          {% if not l['handled'] %}
+          <form method="post" action="{{ url_for('admin.lead_handled', lid=l['id']) }}" class="inline">
+            <button class="btn-sm btn-ghost">Mark done</button>
+          </form>
+          {% else %}<span class="muted small">✓ done</span>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if not leads %}<div class="empty">No find-a-car requests yet. They'll land here the moment someone fills the form.</div>{% endif %}
+</div>
+{% endblock %}

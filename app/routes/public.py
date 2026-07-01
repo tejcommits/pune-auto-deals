@@ -44,6 +44,49 @@ def home():
                            filters={"make": make, "fuel": fuel, "max_price": max_price, "q": q})
 
 
+def _int_or_none(val):
+    try:
+        return int(str(val).replace(",", "").strip())
+    except (TypeError, ValueError):
+        return None
+
+
+@bp.route("/find-car", methods=["GET", "POST"])
+def find_car():
+    """A general lead form: the customer describes the car they want and the
+    dealer goes and sources it. Unlike an enquiry, this is not tied to a vehicle
+    already in stock."""
+    db = get_db()
+    if request.method == "POST":
+        f = request.form
+        name = (f.get("name") or "").strip()
+        phone = (f.get("phone") or "").strip()
+        if not name or not phone:
+            flash("Add your name and a phone number so we can call you back. "
+                  "/ अपना नाम और फ़ोन नंबर भरें ताकि हम आपको कॉल कर सकें।", "error")
+            return redirect(url_for("public.find_car"))
+        db.execute(
+            """INSERT INTO leads
+                 (name, phone, city, budget, make, model, fuel, transmission,
+                  year_min, timeline, notes, created_at)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
+            (name, phone, (f.get("city") or "").strip(),
+             _int_or_none(f.get("budget")), (f.get("make") or "").strip(),
+             (f.get("model") or "").strip(), (f.get("fuel") or "").strip(),
+             (f.get("transmission") or "").strip(), _int_or_none(f.get("year_min")),
+             (f.get("timeline") or "").strip(), (f.get("notes") or "").strip(), now()),
+        )
+        db.commit()
+        flash("Got it. We'll start the hunt and call you back soon. "
+              "/ मिल गया। हम आपकी कार ढूँढना शुरू कर रहे हैं, जल्द कॉल करेंगे।", "success")
+        return redirect(url_for("public.find_car"))
+
+    makes = [r["make"] for r in db.execute(
+        "SELECT DISTINCT make FROM vehicles WHERE make IS NOT NULL AND make != '' ORDER BY make"
+    ).fetchall()]
+    return render_template("public/find_car.html", makes=makes)
+
+
 @bp.route("/vehicle/<int:vid>")
 def vehicle(vid):
     db = get_db()

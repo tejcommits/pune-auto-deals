@@ -57,6 +57,23 @@ CREATE TABLE IF NOT EXISTS enquiries (
     FOREIGN KEY(vehicle_id) REFERENCES vehicles(id)
 );
 
+CREATE TABLE IF NOT EXISTS leads (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    name          TEXT,
+    phone         TEXT,
+    city          TEXT,
+    budget        INTEGER,                -- target spend in rupees
+    make          TEXT,                   -- preferred brand, blank if open
+    model         TEXT,                   -- optional specifics, free text
+    fuel          TEXT,
+    transmission  TEXT,
+    year_min      INTEGER,                -- 'not older than'
+    timeline      TEXT,                   -- week | month | exploring
+    notes         TEXT,
+    created_at    TEXT,
+    handled       INTEGER DEFAULT 0
+);
+
 CREATE TABLE IF NOT EXISTS scraper_health (
     source       TEXT PRIMARY KEY,
     last_run     TEXT,

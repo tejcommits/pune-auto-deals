@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block title %}Find me a car · {{ business_name }}{% endblock %}
+{% block head_extra %}{% include "partials/px_head.html" %}{% endblock %}
+
+{% block body %}
+<div class="px-page">
+  {% include "partials/px_backdrop.html" %}
+
+  <div class="px-shell">
+    <div class="px-container">
+
+      <header class="px-top">
+        <a class="px-brand" href="{{ url_for('public.home') }}">
+          <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="">
+          <span class="px-brand-word">{{ business_name }}</span>
+        </a>
+        <nav class="px-nav">
+          <a class="px-back" href="{{ url_for('public.home') }}">← All cars</a>
+          <a class="px-wa" href="https://wa.me/{{ whatsapp_number }}" target="_blank" rel="noopener">WhatsApp</a>
+        </nav>
+      </header>
+
+      <main class="px-hero">
+
+        <section class="px-narrative">
+          <p class="px-kicker">Trusted used cars · Pune</p>
+          <h1 class="px-headline">Let's find your car.</h1>
+          <p class="px-sub">
+            Tell us the make, your budget, and what matters to you. We find you a used car that
+            fits, and give you the honest rundown on it before you decide.
+          </p>
+
+          <ul class="px-assurances">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+              <div><b>We do the finding, you skip the hunt</b></div>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 12h4l2 5 4-12 2 7h6"/></svg>
+              <div><b>Straight answers on condition and history</b></div>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              <div><b>One person, from first call to the keys</b></div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="px-panel">
+          <div class="px-panel-head">
+            <h2>Start your search</h2>
+            <p>Takes a minute. We call you back, usually the same day.</p>
+          </div>
+
+          <form class="px-form" method="post" action="{{ url_for('public.find_car') }}">
+
+            <div class="px-row">
+              <div class="px-field">
+                <label class="px-label" for="px-name">Your name</label>
+                <input class="px-input" id="px-name" name="name" type="text" required
+                       autocomplete="name" placeholder="e.g. Rohan Kulkarni">
+              </div>
+              <div class="px-field">
+                <label class="px-label" for="px-phone">Phone</label>
+                <input class="px-input" id="px-phone" name="phone" type="tel" required
+                       autocomplete="tel" inputmode="numeric" pattern="[0-9 +]{8,15}" placeholder="10-digit mobile">
+                <span class="px-help">No spam. We never share your number.</span>
+              </div>
+            </div>
+
+            <div class="px-field">
+              <label class="px-label">Budget</label>
+              <div class="px-budget-readout">
+                <span class="px-budget-cap">Up to</span>
+                <span class="px-budget-amount" id="px-budget-amount">₹6L</span>
+              </div>
+              <input class="px-range" id="px-budget" name="budget" type="range"
+                     min="100000" max="5000000" step="50000" value="600000" aria-label="Budget in rupees">
+            </div>
+
+            <div class="px-row">
+              <div class="px-field">
+                <label class="px-label" for="px-make">Brand <span class="opt">optional</span></label>
+                <select class="px-select" id="px-make" name="make">
+                  <option value="">Open to suggestions</option>
+                  {% for m in makes %}<option value="{{ m }}">{{ m }}</option>{% endfor %}
+                </select>
+              </div>
+              <div class="px-field">
+                <label class="px-label" for="px-model">Model <span class="opt">optional</span></label>
+                <input class="px-input" id="px-model" name="model" type="text" placeholder="e.g. City, Creta">
+              </div>
+            </div>
+
+            <div class="px-row">
+              <div class="px-field">
+                <label class="px-label" for="px-fuel">Fuel</label>
+                <select class="px-select" id="px-fuel" name="fuel">
+                  <option value="">Any</option>
+                  <option value="Petrol">Petrol</option>
+                  <option value="Diesel">Diesel</option>
+                  <option value="CNG">CNG</option>
+                  <option value="Hybrid">Hybrid</option>
+                  <option value="Electric">Electric</option>
+                </select>
+              </div>
+              <div class="px-field">
+                <label class="px-label" for="px-year">Not older than</label>
+                <select class="px-select" id="px-year" name="year_min">
+                  <option value="">Any year</option>
+                  {% for y in range(2024, 2014, -1) %}<option value="{{ y }}">{{ y }} or newer</option>{% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <div class="px-field">
+              <label class="px-label">Gearbox</label>
+              <div class="px-seg" role="radiogroup" aria-label="Gearbox">
+                <label><input type="radio" name="transmission" value="" checked><span>Any</span></label>
+                <label><input type="radio" name="transmission" value="Automatic"><span>Automatic</span></label>
+                <label><input type="radio" name="transmission" value="Manual"><span>Manual</span></label>
+              </div>
+            </div>
+
+            <div class="px-field">
+              <label class="px-label">How soon</label>
+              <div class="px-seg" role="radiogroup" aria-label="How soon">
+                <label><input type="radio" name="timeline" value="week"><span>This week</span></label>
+                <label><input type="radio" name="timeline" value="month" checked><span>This month</span></label>
+                <label><input type="radio" name="timeline" value="exploring"><span>Just looking</span></label>
+              </div>
+            </div>
+
+            <div class="px-field">
+              <label class="px-label" for="px-notes">Anything specific <span class="opt">optional</span></label>
+              <textarea class="px-textarea" id="px-notes" name="notes"
+                        placeholder="Colour, single-owner, sunroof, low running… whatever matters to you."></textarea>
+            </div>
+
+            <button class="px-submit" type="submit">Find me a car</button>
+          </form>
+        </section>
+      </main>
+
+      <footer class="px-foot">
+        <span>{{ business_name }} · Pune</span>
+        <span><a href="https://wa.me/{{ whatsapp_number }}">WhatsApp</a> &nbsp; <a href="{{ url_for('admin.login') }}">Dealer login</a></span>
+      </footer>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* Budget readout in Indian rupee shorthand, and slider fill paint. */
+(function () {
+  var range = document.getElementById("px-budget");
+  var out = document.getElementById("px-budget-amount");
+  if (!range || !out) return;
+  function fmt(n) {
+    if (n >= 10000000) return "₹" + (n / 10000000).toFixed(n % 10000000 ? 1 : 0).replace(/\.0$/, "") + "Cr";
+    return "₹" + (n / 100000).toFixed(n % 100000 ? 1 : 0).replace(/\.0$/, "") + "L";
+  }
+  function paint() {
+    var pct = (range.value - range.min) / (range.max - range.min) * 100;
+    range.style.setProperty("--px-fill", pct + "%");
+    out.textContent = (+range.value >= 5000000) ? "₹50L+" : fmt(+range.value);
+  }
+  range.addEventListener("input", paint);
+  paint();
+})();
+</script>
+{% endblock %}

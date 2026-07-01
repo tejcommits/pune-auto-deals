@@ -79,13 +79,17 @@ def create_app(config_class=Config):
             return value
 
     # Make a few values available to every template.
-    # Cache-bust static assets: stamp links with the CSS file's mtime, so a
-    # changed stylesheet is always re-fetched instead of served stale.
+    # Cache-bust static assets: stamp links with the newest mtime across every
+    # CSS file, so editing any one of them (not just style.css) always busts
+    # the cache instead of serving a stale stylesheet.
     import os
-    _css = os.path.join(app.static_folder, "css", "style.css")
+    _css_dir = os.path.join(app.static_folder, "css")
     try:
-        asset_v = str(int(os.path.getmtime(_css)))
-    except OSError:
+        asset_v = str(int(max(
+            os.path.getmtime(os.path.join(_css_dir, f))
+            for f in os.listdir(_css_dir) if f.endswith(".css")
+        )))
+    except (OSError, ValueError):
         asset_v = "1"
 
     @app.context_processor

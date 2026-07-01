@@ -58,6 +58,10 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
 .hero-kicker { color: var(--accent-2); font-weight: 700; letter-spacing: .4px; text-transform: uppercase; font-size: 13px; margin: 0 0 14px; }
 .hero-title { font-size: 38px; font-weight: 800; letter-spacing: -.6px; margin: 0 0 16px; }
 .hero-sub { color: #c7d1e0; font-size: 17px; max-width: 640px; margin: 0; }
+.hero-cta-row { margin: 22px 0 0; }
+.hero-cta { display: inline-block; padding: 11px 20px; border-radius: 10px; font-weight: 700; font-size: 15px;
+  color: #fff; border: 1px solid rgba(255,255,255,.28); background: rgba(255,255,255,.06); transition: background .2s, border-color .2s; }
+.hero-cta:hover { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.5); }
 
 /* ---------- filters ---------- */
 .filters { margin-top: -46px; }

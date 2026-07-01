@@ -195,6 +195,23 @@ def mark_handled(eid):
     return redirect(url_for("admin.enquiries"))
 
 
+@bp.route("/leads")
+@login_required
+def leads():
+    db = get_db()
+    rows = db.execute("SELECT * FROM leads ORDER BY handled, created_at DESC").fetchall()
+    return render_template("admin/leads.html", leads=rows, stats=_stats(db))
+
+
+@bp.route("/lead/<int:lid>/handled", methods=["POST"])
+@login_required
+def lead_handled(lid):
+    db = get_db()
+    db.execute("UPDATE leads SET handled=1 WHERE id=?", (lid,))
+    db.commit()
+    return redirect(url_for("admin.leads"))
+
+
 @bp.route("/trends")
 @login_required
 def trends():
@@ -375,6 +392,7 @@ def _stats(db):
         "published": one("SELECT COUNT(*) FROM vehicles WHERE status='published'"),
         "sold": one("SELECT COUNT(*) FROM vehicles WHERE status='sold'"),
         "enquiries": one("SELECT COUNT(*) FROM enquiries WHERE handled=0"),
+        "leads": one("SELECT COUNT(*) FROM leads WHERE handled=0"),
         "broken": one("SELECT COUNT(*) FROM scraper_health WHERE status!='ok'"),
     }
 
