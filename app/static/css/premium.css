@@ -261,21 +261,33 @@ html:has(.px-page), body:has(.px-page) { background: oklch(0.976 0.007 85); marg
 .px-panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
   padding: clamp(1.5rem, 3vw, 2.2rem); box-shadow: var(--shadow); }
 
-/* confirmation state — shown in place of the form after a successful submit */
-.px-confirm { display: flex; flex-direction: column; align-items: center; text-align: center;
-  gap: 0.6rem; padding-top: clamp(2.2rem, 5vw, 3.2rem); padding-bottom: clamp(2.2rem, 5vw, 3.2rem); }
-.px-confirm__silhouette { width: 100%; max-width: 220px; margin-bottom: 0.6rem; perspective: 500px; }
-.px-confirm__turntable {
-  color: var(--navy); animation: px-turntable 7s linear infinite;
-  transform-style: preserve-3d;
+/* confirmation state — full-screen video takeover after a successful submit */
+.px-confirm-full {
+  position: relative; width: 100%; min-height: 100vh; min-height: 100dvh;
+  display: flex; flex-direction: column; overflow: hidden; background: var(--navy); color: #fff;
 }
-.px-confirm__turntable svg { display: block; width: 100%; height: auto; }
-@keyframes px-turntable { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
-.px-confirm__title { font-family: var(--serif); font-weight: 500; font-size: 1.5rem; color: var(--navy); margin: 0; }
-.px-confirm__msg { color: var(--ink-soft); max-width: 34ch; line-height: 1.6; margin: 0 0 0.6rem; }
+.px-confirm-full__media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.px-confirm-full__scrim { position: absolute; inset: 0; z-index: 1;
+  background:
+    linear-gradient(180deg, oklch(0.12 0.02 262 / 0.55) 0%, oklch(0.12 0.02 262 / 0.35) 40%, oklch(0.10 0.02 262 / 0.82) 100%); }
+.px-confirm-full__top { position: relative; z-index: 2; width: min(1200px, 100% - 3rem); margin-inline: auto; border-bottom: 0; }
+.px-confirm-full__top .px-brand-word { color: #fff; }
+.px-confirm-full__body {
+  position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+  gap: 0.9rem; padding: 2rem;
+}
+.px-confirm-full .px-kicker { color: var(--gold); justify-content: center; }
+.px-confirm-full .px-kicker::before { background: var(--gold); }
+.px-confirm-full__title {
+  font-family: var(--serif); font-weight: 500; color: #fff;
+  font-size: clamp(2.2rem, 5vw, 3.4rem); margin: 0; letter-spacing: -0.01em;
+}
+.px-confirm-full__msg { color: oklch(1 0 0 / 0.86); max-width: 40ch; line-height: 1.65; margin: 0 0 0.8rem; font-size: 1.05rem; }
+.px-confirm-full .px-cta { color: #fff; border-color: oklch(1 0 0 / 0.4); }
+.px-confirm-full .px-cta:hover { background: #fff; color: var(--navy); border-color: #fff; }
 
 @media (max-width: 900px) { .px-video-panel { min-height: 260px; } }
-@media (prefers-reduced-motion: reduce) { .px-confirm__turntable { animation: none; } }
 .px-panel-head { margin-bottom: 1.6rem; }
 .px-panel-head h2 { font-family: var(--serif); font-weight: 500; font-size: 1.4rem; color: var(--navy); margin: 0; }
 .px-panel-head p { margin: 0.4rem 0 0; color: var(--muted); font-size: 0.9rem; }

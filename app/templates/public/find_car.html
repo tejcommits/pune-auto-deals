@@ -3,6 +3,32 @@
 {% block head_extra %}{% include "partials/px_head.html" %}{% endblock %}
 
 {% block body %}
+{% set fc_msgs = get_flashed_messages(category_filter=['find_car_ok']) %}
+
+{% if fc_msgs %}
+<div class="px-page">
+  <section class="px-confirm-full">
+    <video class="px-confirm-full__media" autoplay muted loop playsinline>
+      <source src="{{ url_for('static', filename='video/silhouette.mp4') }}" type="video/mp4">
+    </video>
+    <div class="px-confirm-full__scrim"></div>
+
+    <header class="px-top px-confirm-full__top">
+      <a class="px-brand" href="{{ url_for('public.home') }}">
+        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="">
+        <span class="px-brand-word">{{ business_name }}</span>
+      </a>
+    </header>
+
+    <div class="px-confirm-full__body">
+      <p class="px-kicker">Request received</p>
+      <h1 class="px-confirm-full__title">You're on the list.</h1>
+      <p class="px-confirm-full__msg">{{ fc_msgs[0] }}</p>
+      <a class="px-cta" href="{{ url_for('public.home') }}">Back to all cars <span class="arrow">→</span></a>
+    </div>
+  </section>
+</div>
+{% else %}
 <div class="px-page">
   {% include "partials/px_backdrop.html" %}
 
@@ -19,8 +45,6 @@
           <a class="px-wa" href="https://wa.me/{{ whatsapp_number }}?text={{ whatsapp_message|urlencode }}" target="_blank" rel="noopener">WhatsApp</a>
         </nav>
       </header>
-
-      {% set fc_msgs = get_flashed_messages(category_filter=['find_car_ok']) %}
 
       <main class="px-hero">
 
@@ -57,22 +81,6 @@
           </ul>
         </section>
 
-        {% if fc_msgs %}
-        <section class="px-panel px-confirm">
-          <div class="px-confirm__silhouette" aria-hidden="true">
-            <div class="px-confirm__turntable">
-              <svg viewBox="0 0 200 90" fill="currentColor">
-                <path d="M18 62c-8 0-14-5-14-12s6-11 13-11l10-1 14-19c4-5 10-8 17-8h46c8 0 15 4 19 10l11 17 17 3c8 1 14 7 14 15v6c0 3-2 5-5 5h-9a17 17 0 01-34 0H72a17 17 0 01-34 0H23a5 5 0 01-5-5z"/>
-                <circle cx="55" cy="64" r="10" fill="var(--paper)"/>
-                <circle cx="141" cy="64" r="10" fill="var(--paper)"/>
-              </svg>
-            </div>
-          </div>
-          <h2 class="px-confirm__title">You're on the list.</h2>
-          <p class="px-confirm__msg">{{ fc_msgs[0] }}</p>
-          <a class="px-hero-link" href="{{ url_for('public.home') }}">Back to all cars</a>
-        </section>
-        {% else %}
         <section class="px-panel">
           <div class="px-panel-head">
             <h2>Start your search</h2>
@@ -167,7 +175,6 @@
             <button class="px-submit" type="submit">Find me a car</button>
           </form>
         </section>
-        {% endif %}
       </main>
 
       <footer class="px-foot">
@@ -178,6 +185,7 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 <script>
 /* Budget readout in Indian rupee shorthand, and slider fill paint. */
